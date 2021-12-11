@@ -1,0 +1,4 @@
+telegram_token = [Telegram bot token]
+subreddit = [Subreddit to post on]
+bot_name = [PRAW settings header]
+footer = [Will appear under the content of the post]
