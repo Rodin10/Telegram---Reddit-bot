@@ -9,5 +9,6 @@ A conf file with at least the following settings is required:
 
 If you wish you can add this setting as well:
 - footer (this will appear before the "I'm a bot text" in the posts on Reddit)  
+- to_forward_chat (This will allow the bot to forward messages to the specified Telegram channel **The bot has to be an admin in the specified channel to be able to forward messages**)
 
 All settings are supposed to be set as foo = bar.
