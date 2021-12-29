@@ -13,6 +13,7 @@ subreddit = None
 bot_name = None
 footer = None
 bot_footer = "\n\n*I'm a bot, this action was performed automatically.*"
+to_forward_chat = None
 
 for line in conf_lines: #Read conf file lines
     if "telegram" in line: #If it's the Telegram conf
@@ -23,6 +24,8 @@ for line in conf_lines: #Read conf file lines
         bot_name = line.split("=")[1].rstrip("\n").strip()
     if "footer" in line:
         footer = line.split("=")[1].strip()
+    if "to_forward_chat" in line:
+        to_forward_chat = line.split("=")[1].strip()
 
 starttime = time.time()
 while True:
@@ -39,6 +42,8 @@ while True:
             try:
                 message = update["channel_post"] #Only do something with channel posts
                 update_text = message["text"]
+                message_id = message["message_id"]
+                chat_id = message["chat"]["id"]
                 try:
                     entities = message["entities"]
                     if(len(entities) > 0): #Check if there are any entities
@@ -58,5 +63,9 @@ while True:
                 update_text = update_text + bot_footer if footer == None else update_text + "\n\n{0}{1}".format(footer, bot_footer) #If a footer was configured add it to the post.
                 reddit.init(bot_name)
                 reddit.submitSelfPost(subreddit, title, update_text)
+        
+                if(to_forward_chat != None):
+                    telegram.forwardMessage(telegram_token, to_forward_chat, chat_id, message_id)
+                    
             except Exception as exception:
-               pass
+                pass
