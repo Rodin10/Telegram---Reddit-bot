@@ -6,6 +6,5 @@ def init(bot_name):
     reddit = praw.Reddit(bot_name)
 
 def submitSelfPost(subredditName, title, content):
-    print(subredditName)
     subreddit = reddit.subreddit(subredditName)
     subreddit.submit(title, content)
