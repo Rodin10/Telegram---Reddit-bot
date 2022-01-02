@@ -41,7 +41,6 @@ while True:
     result = response["result"]
     if(len(result) > 0):
         for update in response["result"]: #Get the updates from the result array
-            print(update)
             update_id = update["update_id"]
             previous_id = update_id + 1 #Increase the previous_id by 1 to clear the updates if necessary
 
