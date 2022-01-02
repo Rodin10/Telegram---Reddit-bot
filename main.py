@@ -7,7 +7,7 @@ conf_file = open ("conf.txt", "r")
 conf_lines = conf_file.readlines()
 reddit_token = None
 telegram_token = None
-refresh_time = 300 #in seconds
+refresh_time = 5 #in seconds
 previous_id = 0
 subreddit = None
 bot_name = None
@@ -50,7 +50,7 @@ while True:
                 message_id = message["message_id"]
                 chat_id = message["chat"]["id"]
                 chat_username = message["chat"]["username"]
-                if(len(allowed_chat_usernames_or_ids) != 0 and chat_username in allowed_chat_usernames_or_ids): #Check if the channel post we're going to post is from an allowed source before posting
+                if(len(allowed_chat_usernames_or_ids) != 0 and (chat_username in allowed_chat_usernames_or_ids or str(chat_id) in allowed_chat_usernames_or_ids)): #Check if the channel post we're going to post is from an allowed source before posting
                     try:
                         entities = message["entities"]
                         if(len(entities) > 0): #Check if there are any entities
