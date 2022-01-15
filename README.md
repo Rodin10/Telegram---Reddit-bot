@@ -2,7 +2,7 @@
 Retrieves messages from Telegram announcement channels and posts them to specific Reddit subreddits.  
 
 [PRAW](https://github.com/praw-dev/praw) is required!  
-A conf texffile with at least the following settings is required:
+A conf textfile with at least the following settings is required:
 - telegram_token (Your bot token on Telegram)
 - subreddit (The subreddit you wish to post on)
 - bot_name (The name of the bot settings in praw.ini)  
