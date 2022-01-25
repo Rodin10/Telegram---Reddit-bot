@@ -3,7 +3,7 @@ import telegram
 import json
 import reddit
 
-conf_file = open ("conf.txt", "r")
+conf_file = open ("conf.txt", "r", encoding="utf-8")
 conf_lines = conf_file.readlines()
 reddit_token = None
 telegram_token = None
@@ -11,10 +11,12 @@ refresh_time = 300 #in seconds
 previous_id = 0
 subreddits = []
 bot_name = None
-footer = None
+footers = []
 bot_footer = "\n\n*I'm a bot, this action was performed automatically.*"
 to_forward_chats = []
 allowed_chat_usernames_or_ids = []
+allowed_chat_usernames_or_ids_cleaned = []
+
 
 def readConf():
     for line in conf_lines: #Read conf file lines
@@ -29,9 +31,11 @@ def readConf():
         if "bot_name" in line:
             global bot_name
             bot_name = line.split("=")[1].rstrip("\n").strip()
-        if "footer" in line:
-            global footer
-            footer = line.split("=")[1].strip()
+        if "footers" in line:
+            global footers
+            footerlines = line.split("=")[1].strip()
+            footerlines = footerlines[1:-1] #Remove opening and closing brackets only as we allow urls here
+            footers = footerlines.split(",")  # Create the list
         if "to_forward_chats" in line:
             global to_forward_chats
             toForwardChatLines = line.split("=")[1].strip()
@@ -42,7 +46,20 @@ def readConf():
             all_allowed = all_allowed.replace("[", "",).replace("]", "").replace(" ", "") #Get rid of spacing and the brackets
             global allowed_chat_usernames_or_ids
             allowed_chat_usernames_or_ids = all_allowed.split(",") #Create the list
+            global allowed_chat_usernames_or_ids_cleaned
+            for username_or_id in allowed_chat_usernames_or_ids:
+                allowed_chat_usernames_or_ids_cleaned.append(username_or_id.split(":")[1]) #add just the names or ids without the identifiers in this list for later use
 
+def readFromConf(list, identifier):
+    for entry in list:
+        if(identifier in entry):
+            splittedList = entry.split(":")
+            i = 1
+            entryToReturn = ""
+            while(i < len(splittedList)): #Add everything after the identifier to the entry we're returning
+                entryToReturn = entryToReturn + splittedList[i]
+                i = i + 1
+            return entryToReturn
 readConf()
 starttime = time.time()
 while True:
@@ -62,7 +79,13 @@ while True:
                 message_id = message["message_id"]
                 chat_id = message["chat"]["id"]
                 chat_username = message["chat"]["username"]
-                if(len(allowed_chat_usernames_or_ids) != 0 and (chat_username in allowed_chat_usernames_or_ids or str(chat_id) in allowed_chat_usernames_or_ids)): #Check if the channel post we're going to post is from an allowed source before posting
+
+                if(len(allowed_chat_usernames_or_ids) != 0 and (chat_username in allowed_chat_usernames_or_ids_cleaned or str(chat_id) in allowed_chat_usernames_or_ids_cleaned)): #Check if the channel post we're going to post is from an allowed source before posting
+                    conf_identifier = None #Identifier for which conf settings should be used
+                    for allowed_chat_username_or_id in allowed_chat_usernames_or_ids:
+                        allowed_chat_username_or_id = allowed_chat_username_or_id.split(":")
+                        if(allowed_chat_username_or_id[1] == chat_username):
+                            conf_identifier = allowed_chat_username_or_id[0]
                     try:
                         entities = message["entities"]
                         if(len(entities) > 0): #Check if there are any entities
@@ -80,14 +103,14 @@ while True:
                         pass
                     print("Posting to reddit and forwarding to Telegram now")
                     title = update_text.split("\n")[0]
-                    update_text = update_text + bot_footer if footer == None else update_text + "\n\n{0}{1}".format(footer, bot_footer) #If a footer was configured add it to the post.
+                    update_text = update_text + bot_footer if len(footers) > 0 else update_text + "\n\n{0}{1}".format(readFromConf(footers, conf_identifier), bot_footer) #If a footer was configured add it to the post.
                     reddit.init(bot_name)
-                    for subreddit in subreddits:
-                        reddit.submitSelfPost(subreddit, title, update_text)
+                    reddit.submitSelfPost(readFromConf(subreddits, conf_identifier), title, update_text)
 
                     if(len(to_forward_chats) > 0):
                         for to_forward_chat in to_forward_chats:
-                            telegram.forwardMessage(telegram_token, to_forward_chat, chat_id, message_id)
+                            if(conf_identifier in to_forward_chat): #Only forward to chats that have the correct conf identifier
+                                telegram.forwardMessage(telegram_token, to_forward_chat.split(":")[1], chat_id, message_id)
                     
             except Exception as exception:
                 pass
