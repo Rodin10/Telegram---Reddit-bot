@@ -3,7 +3,7 @@ Retrieves messages from Telegram announcement channels and posts them to specifi
 
 [PRAW](https://github.com/praw-dev/praw) is required!  
 A conf textfile with at least the following settings is required:
-- allowed_chat_usernames_or_ids (A list of whitelisted channel usernames or ids, in square brackets separated with commas, with identifiers separate by a colon i.e. [1:channel_a, 2:12345]) **The identifiers here are the basis for the other conf lines, messages retrieved from the channel with identifier 1 will be posted to the subreddit with the corresponding identifier with the corresponding footer and to the corresponding Telegram channel if configured. These identifiers are always required, even if you only have one entry here.** 
+- allowed_chat_usernames_or_ids (A list of whitelisted channel usernames or ids, in square brackets separated with commas, with identifiers separate by a colon i.e. [1:channel_a, 2:12345]) **The identifiers here are the basis for the other conf lines, messages retrieved from the channel with identifier 1 will be posted to the subreddit with the corresponding identifier, with the corresponding footer and to the corresponding Telegram channel if configured. These identifiers are always required, even if you only have one entry here.** 
 - telegram_token (Your bot token on Telegram)
 - subreddits (A list of subreddits you wish to post on, in square brackets separated with commas, with identifiers separate by a colon i.e. [1:askreddit, 2:pics])
 - bot_name (The name of the bot settings in praw.ini)  
