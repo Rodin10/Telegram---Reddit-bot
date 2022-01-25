@@ -9,7 +9,7 @@ A conf textfile with at least the following settings is required:
 - bot_name (The name of the bot settings in praw.ini)  
 
 If you wish you can add these setting as well:
-- footers (A list of footers, in square brackets separated with commas, with identifiers separate by a colon i.e.[1:This message was brought to you by Telegram. 2:Source: Telegram] only one will appear before the "I'm a bot text" in the posts on Reddit)  
+- footers (A list of footers, in square brackets separated with commas, with identifiers separate by a colon i.e. [1:This message was brought to you by Telegram. 2:Source: Telegram] only one will appear before the "I'm a bot text" in the posts on Reddit)  
 - to_forward_chats (A list of Telegram channels that the bot will forward messages to, in square brackets separated with commas, with identifiers separate by a colon i.e. [1:channel_a, 2:12345]. This will allow the bot to forward messages to the specified Telegram channels **The bot has to be an admin in the specified channel to be able to forward messages**)
 
 All settings are supposed to be set as foo = bar.
