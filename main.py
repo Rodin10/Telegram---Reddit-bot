@@ -58,7 +58,7 @@ def readConf():
 def readFromConf(list, identifier):
     for entry in list:
         if(identifier in entry):
-            splittedList = entry.split(":")
+            splittedList = entry.split(":", 1)
             i = 1
             entryToReturn = ""
             while(i < len(splittedList)): #Add everything after the identifier to the entry we're returning
@@ -67,9 +67,13 @@ def readFromConf(list, identifier):
             return entryToReturn
 readConf()
 starttime = time.time()
+firstStart = True
 while True:
+    if(firstStart == True):
+        firstStart = False
+    else:
+        time.sleep(refresh_time - ((time.time() - starttime) % refresh_time))
     print("Retrieve Telegram updates now")
-    time.sleep(refresh_time - ((time.time() - starttime) % refresh_time))
     response = telegram.getUpdates(telegram_token, previous_id)
     result = response["result"]
     if(len(result) > 0):
