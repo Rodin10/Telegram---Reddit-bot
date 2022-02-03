@@ -7,7 +7,7 @@ conf_file = open ("conf.txt", "r", encoding="utf-8")
 conf_lines = conf_file.readlines()
 reddit_token = None
 telegram_token = None
-refresh_time = 5 #in seconds
+refresh_time = 300 #in seconds
 previous_id = 0
 subreddits = []
 bot_name = None
