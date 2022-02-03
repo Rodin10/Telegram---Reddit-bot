@@ -7,7 +7,7 @@ conf_file = open ("conf.txt", "r", encoding="utf-8")
 conf_lines = conf_file.readlines()
 reddit_token = None
 telegram_token = None
-refresh_time = 300 #in seconds
+refresh_time = 5 #in seconds
 previous_id = 0
 subreddits = []
 bot_name = None
@@ -109,8 +109,8 @@ while True:
 
                     if(len(to_forward_chats) > 0):
                         for to_forward_chat in to_forward_chats:
-                            if(conf_identifier in to_forward_chat): #Only forward to chats that have the correct conf identifier
+                            if(to_forward_chat.startswith(conf_identifier)): #Only forward to chats that have the correct conf identifier
                                 telegram.forwardMessage(telegram_token, to_forward_chat.split(":")[1], chat_id, message_id)
-                    
+
             except Exception as exception:
-                pass
+                print(exception)
