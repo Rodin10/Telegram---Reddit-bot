@@ -3,8 +3,6 @@ import telegram
 import json
 import reddit
 
-conf_file = open ("conf.txt", "r", encoding="utf-8")
-conf_lines = conf_file.readlines()
 reddit_token = None
 telegram_token = None
 refresh_time = 300 #in seconds
@@ -16,9 +14,11 @@ bot_footer = "\n\n*I'm a bot, this action was performed automatically.*"
 to_forward_chats = []
 allowed_chat_usernames_or_ids = []
 allowed_chat_usernames_or_ids_cleaned = []
-
+flairs = []
 
 def readConf():
+    conf_file = open("conf.txt", "r", encoding="utf-8") #Open the file
+    conf_lines = conf_file.readlines() #Read the lines
     for line in conf_lines: #Read conf file lines
         if "telegram" in line: #If it's the Telegram conf
             global telegram_token
@@ -41,6 +41,11 @@ def readConf():
             toForwardChatLines = line.split("=")[1].strip()
             toForwardChatLines = toForwardChatLines.replace("[", "",).replace("]", "").replace(" ", "") #Get rid of spacing and the brackets
             to_forward_chats = toForwardChatLines.split(",") #Create the list
+        if "flairs" in line:
+            global flairs
+            flairLines = line.split("=")[1].strip()
+            flairLines = flairLines[1:-1]  # Remove opening and closing brackets only as we allow urls here
+            flairs = flairLines.split(",")  # Create the list
         if ("allowed_chat_usernames_or_ids") in line:
             all_allowed = line.split("=")[1].strip()
             all_allowed = all_allowed.replace("[", "",).replace("]", "").replace(" ", "") #Get rid of spacing and the brackets
@@ -103,9 +108,18 @@ while True:
                         pass
                     print("Posting to reddit and forwarding to Telegram now")
                     title = update_text.split("\n")[0]
-                    update_text = update_text + bot_footer if len(footers) > 0 else update_text + "\n\n{0}{1}".format(readFromConf(footers, conf_identifier), bot_footer) #If a footer was configured add it to the post.
+                    footerText = readFromConf(footers, conf_identifier)
+                    update_text = update_text + bot_footer if footerText == None else update_text + "\n\n{0}{1}".format(footerText, bot_footer) #If a footer was configured add it to the post.
                     reddit.init(bot_name)
-                    reddit.submitSelfPost(readFromConf(subreddits, conf_identifier), title, update_text)
+                    requiredFlair = readFromConf(flairs, conf_identifier)
+                    flair_id = None #flair_id is empty by default
+                    subredditToPost = readFromConf(subreddits, conf_identifier)
+                    if(requiredFlair != None): #Check if we require a flair to post
+                        flairs = reddit.getFlairs(subredditToPost)
+                        for flair in flairs:
+                            if(flair["flair_text"] == requiredFlair):
+                                flair_id = flair["flair_template_id"] #Find the proper id to use to post
+                    reddit.submitSelfPost(subredditToPost, title, update_text, flair_id)
 
                     if(len(to_forward_chats) > 0):
                         for to_forward_chat in to_forward_chats:
