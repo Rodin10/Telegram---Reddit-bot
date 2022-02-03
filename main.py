@@ -132,5 +132,3 @@ while True:
 
             except Exception as exception:
                 print(exception)
-
-                
