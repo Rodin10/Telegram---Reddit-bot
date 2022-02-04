@@ -10,10 +10,10 @@ def submitSelfPost(subredditName, title, content, flair_id):
     subreddit.submit(title, selftext=content, flair_id=flair_id)
 
 def getFlairs(subredditName):
-    flairSelect = "r/{0}/api/flairselector/".format(subredditName) #Retrieve the flairs using the Reddit API rather than praw
+    flairSelect = "r/{0}/api/flairselector/".format(subredditName) #Retrieve the flairs using the Reddit API rather than praw as this function is not yet implemented in PRAW
     flairs = reddit.post(flairSelect, data={"is_newlink": True})["choices"]
     return flairs
 
-def getSubreddit(subredditName):
-    subreddit = reddit.subreddit(subredditName)
+def getSubreddit(subredditName): #Retrieve the subreddit by its name
+    subreddit = reddit.subreddit(subredditName) 
     return subreddit
