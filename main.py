@@ -68,11 +68,12 @@ def readFromConf(list, identifier):
 readConf()
 starttime = time.time()
 firstStart = True
+
 while True:
-    if(firstStart == True):
+    if(firstStart == True): #Immediately run on startup
         firstStart = False
     else:
-        time.sleep(refresh_time - ((time.time() - starttime) % refresh_time))
+        time.sleep(refresh_time - ((time.time() - starttime) % refresh_time)) #Sleep for the set amount of time if not on startup
     print("Retrieve Telegram updates now")
     response = telegram.getUpdates(telegram_token, previous_id)
     result = response["result"]
@@ -91,7 +92,7 @@ while True:
 
                 if(len(allowed_chat_usernames_or_ids) != 0 and (chat_username in allowed_chat_usernames_or_ids_cleaned or str(chat_id) in allowed_chat_usernames_or_ids_cleaned)): #Check if the channel post we're going to post is from an allowed source before posting
                     conf_identifier = None #Identifier for which conf settings should be used
-                    for allowed_chat_username_or_id in allowed_chat_usernames_or_ids:
+                    for allowed_chat_username_or_id in allowed_chat_usernames_or_ids: #Go through the allowed chat usernames or id list and retrieve the conf identifier from there
                         allowed_chat_username_or_id = allowed_chat_username_or_id.split(":")
                         if(allowed_chat_username_or_id[1] == chat_username):
                             conf_identifier = allowed_chat_username_or_id[0]
@@ -109,9 +110,9 @@ while True:
                                 except:
                                     pass
                     except Exception as exception:
-                        pass
+                        pass #Ignore exceptions here as messages without entities throw errors
                     print("Posting to reddit and forwarding to Telegram now")
-                    title = update_text.split("\n")[0]
+                    title = update_text.split("\n")[0] #Title is the first line of the message
                     footerText = readFromConf(footers, conf_identifier)
                     update_text = update_text + bot_footer if footerText == None else update_text + "\n\n{0}{1}".format(footerText, bot_footer) #If a footer was configured add it to the post.
                     reddit.init(bot_name)
@@ -122,7 +123,7 @@ while True:
                         flairs = reddit.getFlairs(subredditToPost)
                         for flair in flairs:
                             if(flair["flair_text"] == requiredFlair):
-                                flair_id = flair["flair_template_id"] #Find the proper id to use to post
+                                flair_id = flair["flair_template_id"] #Find the proper flair id to use to post
                     reddit.submitSelfPost(subredditToPost, title, update_text, flair_id)
 
                     if(len(to_forward_chats) > 0):
